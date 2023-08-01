@@ -10,6 +10,8 @@ import {
   Text,
   TextField,
   View,
+  Card,
+  useTheme,
   withAuthenticator,
 } from '@aws-amplify/ui-react';
 import { listNotes } from './graphql/queries';
@@ -20,6 +22,7 @@ import {
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
+  const { tokens } = useTheme();
 
   useEffect(() => {
     fetchNotes();
@@ -101,31 +104,48 @@ const App = ({ signOut }) => {
         </Flex>
       </View>
       <Heading level={2}>Current Notes</Heading>
-      <View margin="3rem 0">
-        {notes.map((note) => (
-          <Flex
-            key={note.id || note.name}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Text as="strong" fontWeight={700}>
-              {note.name}
-            </Text>
-            <Text as="span">{note.description}</Text>
-            {note.image && (
-              <Image
-                src={note.image}
-                alt={`visual aid for ${notes.name}`}
-                style={{ width: 400 }}
-              />
-            )}
-            <Button variation="link" onClick={() => deleteNote(note)}>
-              Delete note
-            </Button>
-          </Flex>
-        ))}
-      </View>
+      <Flex direction="column" alignItems="center">
+        <View margin="3rem 3rem" width="50%">
+          {notes.map((note) => (
+            <View
+              key={note.id || note.name}
+              backgroundColor={tokens.colors.background.secondary}
+              padding={tokens.space.medium}
+            >
+              <Card>
+                <Flex direction="row" alignItems="flex-start">
+                  {note.image && (
+                    <Image
+                      src={note.image}
+                      alt={`visual aid for ${notes.name}`}
+                      width="70%"
+                      maxWidth="25rem"
+                    />
+                  )}
+                  <Flex
+                    direction="column"
+                    alignItems="flex-start"
+                    gap={tokens.space.xs}
+                  >
+                    <Heading level={5} margin="0 0.5rem">
+                      {note.name}
+                    </Heading>
+                    <Text as="span" margin="1rem 0">
+                      {note.description}
+                    </Text>
+                    <Button
+                      variation="primary"
+                      onClick={() => deleteNote(note)}
+                    >
+                      Delete note
+                    </Button>
+                  </Flex>
+                </Flex>
+              </Card>
+            </View>
+          ))}
+        </View>
+      </Flex>
       <Button onClick={signOut}>Sign Out</Button>
     </View>
   );
